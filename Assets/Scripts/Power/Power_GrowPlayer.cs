@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+//USADO PARA USAR LOS SOCKETS
+using SocketIO;
 public class Power_GrowPlayer : Power_BaseBehaviour
 {
 
@@ -20,7 +22,9 @@ public class Power_GrowPlayer : Power_BaseBehaviour
     private Transform middle_part;
     private Transform down_part;
     private BoxCollider2D collider;
-
+    private BGWebSocket APIREST;
+    private BGobjects.AttributePlayer attAux;
+    public float datito = 1;
 
 
     void Start()
@@ -32,12 +36,25 @@ public class Power_GrowPlayer : Power_BaseBehaviour
         collider = GetComponent<BoxCollider2D>();
         initialColliderSize = collider.size.y;
         cornerExtents = up_part.GetComponent<Renderer>().bounds.extents.y;
+        //ACA EL CODIGO QUE DEBERIA CAMBIAR TODO
+        //APIRestClient.instance.socket.On("AllSensors",OnAllSensors);
+        BGWebSocket.instance.socket.On("Smessage",OnSmessag);
     }
+    private void OnSmessag(SocketIOEvent socketIOevent)
+    {
+        //Debug.Log("ENTRA EN EL CUSTIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+        attAux = BGWebSocket.instance.JSONstrToAttribute(socketIOevent.data);
+        string data = attAux.Dato.ToString();
+        //Debug.Log("EL DATO QUE LLEGO EeeeeeeeeeeeeeeeEESS: "+ data);
+    }
+
 
     void Update()
     {
         PerformPower();
         changeUse();
+        //APIRestClient.instance.GetAllSensors();
+        //datito = GetComponent<APIRestClient>().datito;
     }
 
     public void PerformPower()
@@ -103,7 +120,10 @@ public class Power_GrowPlayer : Power_BaseBehaviour
             Debug.Log(currentUseOfChangeMagnitude);
             time = 10.0f;
         }
-
+        datito = BGWebSocket.instance.Datito + 100;
+        currentUseOfChangeMagnitude = (datito * 4)/100;
+        //Debug.Log(currentUseOfChangeMagnitude);
+        //Debug.Log("El datito cambio a : "+ datito );
     }
 
 }

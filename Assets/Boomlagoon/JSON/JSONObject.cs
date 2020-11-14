@@ -1,4 +1,4 @@
-/* JSONObject2.cs -- Simple C# JSON parser
+/* JSONObject.cs -- Simple C# JSON parser
   version 1.4 - March 17, 2014
 
   Copyright (C) 2012 Boomlagoon Ltd.
@@ -80,7 +80,7 @@ namespace Boomlagoon.JSON {
 			Number = number;
 		}
 
-		public JSONValue(JSONObject2 obj) {
+		public JSONValue(JSONObject obj) {
 			if (obj == null) {
 				Type = JSONValueType.Null;
 			} else {
@@ -120,7 +120,7 @@ namespace Boomlagoon.JSON {
 
 				case JSONValueType.Object:
 					if (value.Obj != null) {
-						Obj = new JSONObject2(value.Obj);
+						Obj = new JSONObject(value.Obj);
 					}
 					break;
 
@@ -133,7 +133,7 @@ namespace Boomlagoon.JSON {
 		public JSONValueType Type { get; private set; }
 		public string Str { get; set; }
 		public double Number { get; set; }
-		public JSONObject2 Obj { get; set; }
+		public JSONObject Obj { get; set; }
 		public JSONArray Array { get; set; }
 		public bool Boolean { get; set; }
 		public JSONValue Parent { get; set; }
@@ -146,7 +146,7 @@ namespace Boomlagoon.JSON {
 			return new JSONValue(number);
 		}
 
-		public static implicit operator JSONValue(JSONObject2 obj) {
+		public static implicit operator JSONValue(JSONObject obj) {
 			return new JSONValue(obj);
 		}
 
@@ -251,7 +251,7 @@ namespace Boomlagoon.JSON {
 		/// <param name="jsonString"></param>
 		/// <returns>A new JSONArray object if successful, null otherwise.</returns>
 		public static JSONArray Parse(string jsonString) {
-			var tempObject = JSONObject2.Parse("{ \"array\" :" + jsonString + '}');
+			var tempObject = JSONObject.Parse("{ \"array\" :" + jsonString + '}');
 			return tempObject == null ? null : tempObject.GetValue("array").Array;
 		}
 
@@ -290,7 +290,7 @@ namespace Boomlagoon.JSON {
 
 	}
 
-	public class JSONObject2 : IEnumerable<KeyValuePair<string, JSONValue>> {
+	public class JSONObject : IEnumerable<KeyValuePair<string, JSONValue>> {
 
 		private enum JSONParsingState {
 			Object,
@@ -314,14 +314,14 @@ namespace Boomlagoon.JSON {
 		private static readonly byte[] unicodeBytes = new byte[2];
 #endif
 
-		public JSONObject2() {
+		public JSONObject() {
 		}
 
 		/// <summary>
-		/// Construct a copy of the given JSONObject2.
+		/// Construct a copy of the given JSONObject.
 		/// </summary>
 		/// <param name="other"></param>
-		public JSONObject2(JSONObject2 other) {
+		public JSONObject(JSONObject other) {
 			values = new Dictionary<string, JSONValue>();
 
 			if (other != null) {
@@ -361,7 +361,7 @@ namespace Boomlagoon.JSON {
 			return value.Number;
 		}
 
-		public JSONObject2 GetObject(string key) {
+		public JSONObject GetObject(string key) {
 			var value = GetValue(key);
 			if (value == null) {
 				JSONLogger.Error(key + " == null");
@@ -402,11 +402,11 @@ namespace Boomlagoon.JSON {
 		}
 
 		/// <summary>
-		/// Attempt to parse a string into a JSONObject2.
+		/// Attempt to parse a string into a JSONObject.
 		/// </summary>
 		/// <param name="jsonString"></param>
-		/// <returns>A new JSONObject2 or null if parsing fails.</returns>
-		public static JSONObject2 Parse(string jsonString) {
+		/// <returns>A new JSONObject or null if parsing fails.</returns>
+		public static JSONObject Parse(string jsonString) {
 			if (string.IsNullOrEmpty(jsonString)) {
 				return null;
 			}
@@ -427,7 +427,7 @@ namespace Boomlagoon.JSON {
 							return Fail('{', startPosition);
 						}
 
-						JSONValue newObj = new JSONObject2();
+						JSONValue newObj = new JSONObject();
 						if (currentValue != null) {
 							newObj.Parent = currentValue;
 						}
@@ -805,16 +805,16 @@ namespace Boomlagoon.JSON {
 			return result;
 		}
 
-		private static JSONObject2 Fail(char expected, int position) {
+		private static JSONObject Fail(char expected, int position) {
 			return Fail(new string(expected, 1), position);
 		}
 
-		private static JSONObject2 Fail(string expected, int position) {
+		private static JSONObject Fail(string expected, int position) {
 			JSONLogger.Error("Invalid json string, expecting " + expected + " at " + position);
 			return null;
 		}
 
-		/// <returns>String representation of this JSONObject2</returns>
+		/// <returns>String representation of this JSONObject</returns>
 		public override string ToString() {
 			var stringBuilder = new StringBuilder();
 			stringBuilder.Append('{');
@@ -841,7 +841,7 @@ namespace Boomlagoon.JSON {
 		}
 
 		/// <summary>
-		/// Empty this JSONObject2 of all values.
+		/// Empty this JSONObject of all values.
 		/// </summary>
 		public void Clear() {
 			values.Clear();

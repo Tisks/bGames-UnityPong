@@ -7,7 +7,7 @@ using SocketIO;
 using UnityEngine;
 using static BGobjects;
 
-public class APIRestClient : MonoBehaviour
+public class BGWebSocket2 : MonoBehaviour
 {
     private const string API_URL = "http://localhost:8000/";
     public SocketIOComponent socket;
@@ -29,7 +29,7 @@ public class APIRestClient : MonoBehaviour
     }
 
     IEnumerator ConnectToServer(){
-        var json = new Boomlagoon.JSON.JSONObject2();
+        var json = new Boomlagoon.JSON.JSONObject();
         json.Add("room","SensorCerebral");
         json.Add("name","Juego_Pong");
         String data = json.ToString();
@@ -41,7 +41,7 @@ public class APIRestClient : MonoBehaviour
     private void OnAllSensors(SocketIOEvent socketIOevent)
     {
         string data = socketIOevent.data.ToString();
-        var json = Boomlagoon.JSON.JSONObject2.Parse(data);
+        var json = Boomlagoon.JSON.JSONObject.Parse(data);
         Debug.Log("Entro al All Sensors "+ data);
     }
     
@@ -49,12 +49,12 @@ public class APIRestClient : MonoBehaviour
     {
         string data = socketIOevent.data.ToString();
         var jj = socketIOevent.data;
-        var json = Boomlagoon.JSON.JSONObject2.Parse(data);
+        var json = Boomlagoon.JSON.JSONObject.Parse(data);
         Debug.Log("Entro al All SMessage: "+ data);
         string dato = (json["message"]).ToString(); //GetNumber("data");
-        json = Boomlagoon.JSON.JSONObject2.Parse(dato);
+        json = Boomlagoon.JSON.JSONObject.Parse(dato);
         Debug.Log("Entro al All SMessage 2 obtiene data: "+ json["data"]);
-        json = Boomlagoon.JSON.JSONObject2.Parse(dato);
+        json = Boomlagoon.JSON.JSONObject.Parse(dato);
         Datito = (float)json.GetNumber("data");
         
         Debug.Log("DateTime.Now.Millisecond TIEMPOOOOOO: "+(new TimeSpan(DateTime.Now.Ticks)).TotalMilliseconds);
@@ -64,27 +64,27 @@ public class APIRestClient : MonoBehaviour
         socket.Emit("AllSensors");
     }
     public void ConnectToSensor(string sensorRoom, string nameGame){
-        var json = new Boomlagoon.JSON.JSONObject2();
+        var json = new Boomlagoon.JSON.JSONObject();
         json.Add("room",sensorRoom);
         json.Add("name",nameGame);
         String data = json.ToString();
         socket.Emit("join_sensor",new JSONObject(data));
     }
 
-    private static APIRestClient s_Instance = null;
+    private static BGWebSocket s_Instance = null;
 
-    public static APIRestClient instance
+    public static BGWebSocket instance
     {
         get
         {
         
             if (s_Instance == null)
-                s_Instance = FindObjectOfType(typeof(APIRestClient)) as APIRestClient;
+                s_Instance = FindObjectOfType(typeof(BGWebSocket)) as BGWebSocket;
 
             if (s_Instance == null)
             {
                 GameObject obj = new GameObject("Game Controller");
-                s_Instance = obj.AddComponent(typeof(APIRestClient)) as APIRestClient;
+                s_Instance = obj.AddComponent(typeof(BGWebSocket)) as BGWebSocket;
                 Debug.Log("Could not locate an APIRestClient object. APIRestClient was Generated Automaticly.");
             }
 
@@ -99,27 +99,29 @@ public class APIRestClient : MonoBehaviour
         /* print("ALOOOO ?");
         Debug.Log("Esta cosa se envia nuevamente");
         socket.Emit("AllSensors");*/
+        //Debug.Log("ESTA COSA ESTA CONECTADA?"+socket.autoConnect);
         //Datito = UnityEngine.Random.Range(0.0f, 100.0f);
+        //socket.Emit("AllSensors");
     }
 
     
     public AttributePlayer JSONstrToAttribute(JSONObject jsonData){
         Debug.Log("DESCOMPONER EL JSON EN UN ATTRIBUTOOOOOOOOOOOOOOOOOOOO:");
         string data = jsonData.ToString();
-        var json = Boomlagoon.JSON.JSONObject2.Parse(data);
+        var json = Boomlagoon.JSON.JSONObject.Parse(data);
         Debug.Log("Descomprimiendo JSON: "+ data);
         string dato = (json["message"]).ToString(); //GetNumber("data");
-        json = Boomlagoon.JSON.JSONObject2.Parse(dato);
+        json = Boomlagoon.JSON.JSONObject.Parse(dato);
         Debug.Log("Dato relacionado al JSON: "+ json["data"]);
         AttributePlayer AttAux = new AttributePlayer((int)json.GetNumber("id_player"), json.GetString("nameat"), json.GetString("namecategory"),(int)json.GetNumber("data"), json.GetString("data_type"), json.GetString("input_source"), json.GetString("date_time"));
         return AttAux;
     }
     public AttributeResPlayer JSONstrToResAttribute(JSONObject jsonData){
         string data = jsonData.ToString();
-        var json = Boomlagoon.JSON.JSONObject2.Parse(data);
+        var json = Boomlagoon.JSON.JSONObject.Parse(data);
         Debug.Log("Descomprimiendo JSON: "+ data);
         string dato = (json["message"]).ToString(); //GetNumber("data");
-        json = Boomlagoon.JSON.JSONObject2.Parse(dato);
+        json = Boomlagoon.JSON.JSONObject.Parse(dato);
         Debug.Log("Dato relacionado al JSON: "+ json["data"]);
         AttributeResPlayer AttAux = new AttributeResPlayer((int)json.GetNumber("id_player"), json.GetString("nameat"),(int)json.GetNumber("data"), json.GetString("data_type"), json.GetString("date_time"));
         return AttAux;
