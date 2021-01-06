@@ -24,7 +24,7 @@ public class Power_GrowPlayer : Power_BaseBehaviour
     private BoxCollider2D collider;
     private BGWebSocket APIREST;
     private BGobjects.AttributePlayer attAux;
-    public float datito = 1;
+    public float datito = 0;
 
 
     void Start()
@@ -42,10 +42,10 @@ public class Power_GrowPlayer : Power_BaseBehaviour
     }
     private void OnSmessag(SocketIOEvent socketIOevent)
     {
-        //Debug.Log("ENTRA EN EL CUSTIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+        Debug.Log("ENTRA EN EL CUSTIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         attAux = BGWebSocket.instance.JSONstrToAttribute(socketIOevent.data);
         string data = attAux.Dato.ToString();
-        //Debug.Log("EL DATO QUE LLEGO EeeeeeeeeeeeeeeeEESS: "+ data);
+        Debug.Log("EL DATO QUE LLEGO EeeeeeeeeeeeeeeeEESS: "+ data);
     }
 
 
@@ -120,10 +120,10 @@ public class Power_GrowPlayer : Power_BaseBehaviour
             Debug.Log(currentUseOfChangeMagnitude);
             time = 10.0f;
         }
-        datito = BGWebSocket.instance.Datito + 100;
+        datito = BGWebSocket.instance.Datito;
         currentUseOfChangeMagnitude = (datito * 4)/100;
         //Debug.Log(currentUseOfChangeMagnitude);
-        //Debug.Log("El datito cambio a : "+ datito );
+        Debug.Log("El datito cambio a : "+ datito );
     }
 
 }

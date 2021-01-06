@@ -11,7 +11,7 @@ public class BGWebSocket : MonoBehaviour
 {
     private const string API_URL = "http://localhost:8000/";
     public SocketIOComponent socket;
-    private float datito = 1;
+    private float datito = 0;
     AttributeResPlayer newPlayer;
     AttributePlayer attibute;
 
@@ -24,7 +24,7 @@ public class BGWebSocket : MonoBehaviour
         //suscripción al web socket
         socket.On("AllSensors",OnAllSensors);
         socket.On("Smessage",OnSmessage);
-
+        socket.On("Imessage", OnImessage);
         StartCoroutine(ConnectToServer());
     }
 
@@ -44,7 +44,13 @@ public class BGWebSocket : MonoBehaviour
         var json = Boomlagoon.JSON.JSONObject.Parse(data);
         Debug.Log("Entro al All Sensors "+ data);
     }
-    
+    private void OnImessage(SocketIOEvent socketIOevent)
+    {
+        string data = socketIOevent.data.ToString();
+        var json = Boomlagoon.JSON.JSONObject.Parse(data);
+        Debug.Log("Connected? " + data);
+    }
+
     private void OnSmessage(SocketIOEvent socketIOevent)
     {
         string data = socketIOevent.data.ToString();
@@ -55,7 +61,7 @@ public class BGWebSocket : MonoBehaviour
         json = Boomlagoon.JSON.JSONObject.Parse(dato);
         Debug.Log("Entro al All SMessage 2 obtiene data: "+ json["data"]);
         json = Boomlagoon.JSON.JSONObject.Parse(dato);
-        Datito = (float)json.GetNumber("data");
+        Datito = Datito+ (float)json.GetNumber("data");
         
         Debug.Log("DateTime.Now.Millisecond TIEMPOOOOOO: "+(new TimeSpan(DateTime.Now.Ticks)).TotalMilliseconds);
     }
@@ -101,7 +107,7 @@ public class BGWebSocket : MonoBehaviour
         socket.Emit("AllSensors");*/
         //Debug.Log("ESTA COSA ESTA CONECTADA?"+socket.autoConnect);
         //Datito = UnityEngine.Random.Range(0.0f, 100.0f);
-        socket.Emit("AllSensors");
+        //socket.Emit("AllSensors");
     }
 
     
